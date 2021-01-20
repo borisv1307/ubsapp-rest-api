@@ -306,7 +306,7 @@ def logout():
 
 ### GET ALL USERS
 @user_blueprint.route('/api/v1/users/', methods=['GET'])
-@token_required
+#@token_required
 def get_all_users():
     if request.method == 'GET':
         users = mongo.db.user

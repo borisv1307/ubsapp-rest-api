@@ -29,7 +29,6 @@ def add_presence_to_pool():
                 "city": profile_data['city'],
                 "email": profile_data['email'],
                 "position": profile_data['position'],
-                "gender": profile_data['gender'],
                 "aboutMe":  profile_data['aboutMe'],
                 "education": profile_data['education'],
                 "experience": profile_data['experience'],
@@ -39,7 +38,8 @@ def add_presence_to_pool():
                 "first_name": profile_data['first_name'],
                 "last_name": profile_data['last_name'],
                 "added_on": date_joined,
-                "reviewed_by": output['reviewed_by']
+                "reviewed_by": output['reviewed_by'],
+                "gender": profile_data['gender']
             }
         else:
             result = {'code': 4, "error": "User account does not exist"}, 403
@@ -61,7 +61,6 @@ def insert_data(profile_information):
         "email": profile_information['email'],
         "user_id": profile_information['user_id'],
         "profileName": profile_information['profileName'],
-        "gender": profile_information['gender'],
         "profileImg": profile_information['profileImg'],
         "first_name": profile_information['first_name'],
         "last_name": profile_information['last_name'],
@@ -70,7 +69,8 @@ def insert_data(profile_information):
         "education": profile_information['education'],
         "experience": profile_information['experience'],
         "added_on": date_joined,
-        "reviewed_by": []
+        "reviewed_by": [],
+        "gender": profile_information['gender'],
     })
     if create_presence:
         return profile_information
@@ -93,7 +93,7 @@ def get_all_presence_for_reviewer(reviewer_id):
                     'profile_id': presence['profile_id'],
                     'profile_name': presence['profileName'],
                     'profileImg': presence['profileImg'],
-                    'gender':presence['gender'],
+                    'gender': presence['gender'],
                     'state': presence['state'],
                     'zip': presence['zip'],
                     'city': presence['city'],
@@ -154,6 +154,7 @@ def update_presence_with_review():
         result = {'code': 4, 'error': error}, 403
     return result
 
+
 @presence_blueprint.route('/api/v1/getCount/<reviewer_id>/', methods=['GET'])
 def get_presence_count(reviewer_id):
     try:
@@ -163,16 +164,23 @@ def get_presence_count(reviewer_id):
 
     action = "$elemMatch"
 
+    declined_male_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Declined"}}}, {"gender": "Male"}]}
+    declined_female_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Declined"}}}, {"gender": "Female"}]}
+    accepted_male_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Accepted"}}}, {"gender": "Male"}]}
+    accepted_female_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Accepted"}}}, {"gender": "Female"}]}
 
-    declined_male_query = {"$and":[{"reviewed_by": {action: {"reviewer_id" : reviewer_id, "application_status": "Declined"}}},{"gender":"Male"}]}
-    declined_female_query = {"$and":[{"reviewed_by": {action: {"reviewer_id" : reviewer_id, "application_status": "Declined"}}},{"gender":"Female"}]}
-    accepted_male_query = {"$and":[{"reviewed_by": {action: {"reviewer_id" : reviewer_id, "application_status": "Accepted"}}},{"gender":"Male"}]}
-    accepted_female_query = {"$and":[{"reviewed_by": {action: {"reviewer_id" : reviewer_id, "application_status": "Accepted"}}},{"gender":"Female"}]}
-
-    declined_male_count = mongo.db.presence.count_documents(declined_male_query)
-    declined_female_count = mongo.db.presence.count_documents(declined_female_query)
-    accepted_male_count = mongo.db.presence.count_documents(accepted_male_query)
-    accepted_female_count = mongo.db.presence.count_documents(accepted_female_query)
+    declined_male_count = mongo.db.presence.count_documents(
+        declined_male_query)
+    declined_female_count = mongo.db.presence.count_documents(
+        declined_female_query)
+    accepted_male_count = mongo.db.presence.count_documents(
+        accepted_male_query)
+    accepted_female_count = mongo.db.presence.count_documents(
+        accepted_female_query)
 
     try:
         result = {
@@ -185,4 +193,41 @@ def get_presence_count(reviewer_id):
     except Exception as error:
         print("Exception", error)
         result = {'code': 4, 'error': "No reviews found"}, 403
+    return result
+
+
+@presence_blueprint.route('/api/v1/getAcceptanceRate/<user_id>/', methods=['GET'])
+def get_acceptance_rate_for_jobseeker(user_id):
+    try:
+        user_id = int(user_id)
+    except TypeError:
+        return {'error': 'reviewer id must be numeric'}, 403
+
+    submitted_presences = list(
+        mongo.db.presence.find({"user_id": user_id}))
+
+    result = {}
+
+    for presence in submitted_presences:
+        profile_name = presence["profileName"]
+        reviewer_response = presence["reviewed_by"]
+
+        print(profile_name)
+
+        accepted_count = 0
+        declined_count = 0
+
+        for response in reviewer_response:
+            status = response["application_status"]
+            if status == "Accepted":
+                accepted_count += 1
+            elif status == "Declined":
+                declined_count += 1
+
+        temp = {}
+        temp["accepted"] = accepted_count
+        temp["declined"] = declined_count
+
+        result[profile_name] = temp
+
     return result

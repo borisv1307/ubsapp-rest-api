@@ -101,7 +101,8 @@ class TestSomething:
             "expEndDate": "0001-01"
             }
         ],
-        "user_id": None
+        "user_id": None,
+        "gender": "Male"
         }
         response = test_client.post('/api/v1/createProfile/', data=json.dumps(data),headers={'Content-Type': 'application/json'})
         assert response.status_code == 403
@@ -142,7 +143,8 @@ class TestSomething:
             "expEndDate": "0001-01"
             }
         ],
-        "user_id": ' '
+        "user_id": ' ',
+        "gender": "Male"
         }
         response = test_client.post('/api/v1/createProfile/', data=json.dumps(data),headers={'Content-Type': 'application/json'})
         assert response.status_code == 403
@@ -183,7 +185,8 @@ class TestSomething:
             "expEndDate": "0001-01"
             }
         ],
-        "user_id": "1"
+        "user_id": "1",
+        "gender": "Male"
         }
         response = test_client.post('/api/v1/createProfile/', data=json.dumps(data),headers={'Content-Type': 'application/json'})
         assert response.status_code == 200
@@ -223,7 +226,8 @@ class TestSomething:
             "expEndDate": "0001-01"
             }
         ],
-        "user_id": "99999"
+        "user_id": "99999",
+        "gender": "Male"
         }
         response = test_client.post('/api/v1/createProfile/', data=json.dumps(data),headers={'Content-Type': 'application/json'})
         assert response.status_code == 403
@@ -298,7 +302,8 @@ class TestSomething:
             "expEndDate": "0001-01"
             }
         ],
-        "user_id": "1"
+        "user_id": "1",
+        "gender": "Male"
         }
         response = test_client.put('/api/v1/editProfile/', data=json.dumps(data),headers={'Content-Type': 'application/json'})
         assert response.status_code == 200
@@ -340,7 +345,8 @@ class TestSomething:
             "expEndDate": "0001-01"
             }
         ],
-        "user_id": "99999"
+        "user_id": "99999",
+        "gender": "Male"
         }
         response = test_client.put('/api/v1/editProfile/', data=json.dumps(data),headers={'Content-Type': 'application/json'})
         assert response.status_code == 403

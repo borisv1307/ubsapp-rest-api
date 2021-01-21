@@ -62,7 +62,8 @@ def create_user_profile():
             "position": profile_data['position'],
             "aboutMe":  profile_data['aboutMe'],
             "education": profile_data['education'],
-            "experience": profile_data['experience']
+            "experience": profile_data['experience'],
+            "gender": profile_data['gender']
         })
 
         if create_profile:
@@ -76,7 +77,8 @@ def create_user_profile():
                 "position": profile_data['position'],
                 "aboutMe":  profile_data['aboutMe'],
                 "education": profile_data['education'],
-                "experience": profile_data['experience']
+                "experience": profile_data['experience'],
+                "gender": profile_data['gender']
             }
         else:
             output = {'code': 2, "error": "Insert Failed"}
@@ -125,7 +127,8 @@ def get_user_profiles(user_id):
                             "position": getprofile['position'],
                             "aboutMe":  getprofile['aboutMe'],
                             "education": getprofile['education'],
-                            "experience": getprofile['experience']
+                            "experience": getprofile['experience'],
+                            "gender": getprofile['gender']
                         })
                     else:
                         output.append({
@@ -142,7 +145,8 @@ def get_user_profiles(user_id):
                             "position": getprofile['position'],
                             "aboutMe":  getprofile['aboutMe'],
                             "education": getprofile['education'],
-                            "experience": getprofile['experience']
+                            "experience": getprofile['experience'],
+                            "gender": getprofile['gender']
                         })
             else:
                 output = {"error": "Profiles not found"}

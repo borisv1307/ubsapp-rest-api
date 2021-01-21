@@ -179,7 +179,6 @@ def edit_profile():
         {
             "profile_id": profile_data['profile_id'],
             "user_id": profile_data['user_id'],
-
             "profileName": profile_data["profileName"],
             "profileImg": profile_data["profileImg"],
             "first_name": profile_data["first_name"],
@@ -187,7 +186,10 @@ def edit_profile():
             "position": profile_data["position"],
             "aboutMe": profile_data["aboutMe"],
             "education": profile_data["education"],
-            "experience": profile_data["experience"]
+            "experience": profile_data["experience"],
+            "gender": profile_data["gender"],
+            "email": profile_data["email"]
+
 
         })
         if edit_profile_action:
@@ -202,7 +204,9 @@ def edit_profile():
                 "position": profile_data["position"],
                 "aboutMe": profile_data["aboutMe"],
                 "education": profile_data["education"],
-                "experience": profile_data["experience"]
+                "experience": profile_data["experience"],
+                "gender": profile_data["gender"],
+                "email": profile_data["email"]
             }
         else:
             output = {"code": 2, "error": "Document update failed"}

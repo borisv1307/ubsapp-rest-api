@@ -4,6 +4,7 @@ test create profile and view profile.
 
 """
 # pylint: disable = line-too-long, too-many-lines, no-name-in-module, import-error, multiple-imports, pointless-string-statement, wrong-import-order
+from project import create_app
 from bson.objectid import ObjectId
 
 import pytest
@@ -16,7 +17,6 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 PARENT_ROOT = os.path.abspath(os.path.join(SITE_ROOT, os.pardir))
 GRANDPAPA_ROOT = os.path.abspath(os.path.join(PARENT_ROOT, os.pardir))
 sys.path.insert(0, GRANDPAPA_ROOT)
-from project import create_app
 
 profilename = "Profile B"
 
@@ -42,7 +42,7 @@ class TestPool:
         random_profileid = random.randint(99, 99999)
         data = {
             "profileName": profilename,
-            "gender":"Female",
+            "gender": "Female",
             "user_id": random_userid,
             "profile_id": random_profileid,
             "state": "PA",
@@ -80,7 +80,8 @@ class TestPool:
                     "status": ""
                 }
             ],
-            "added_on": datetime.utcnow()
+            "added_on": datetime.utcnow(),
+            "gender": "Male"
         }
         response = test_client.post(
             '/api/v1/addPresence/', data=json.dumps(data), headers={'Content-Type': 'application/json'})
@@ -94,7 +95,7 @@ class TestPool:
         THEN check that request has email address
         """
         data = {
-            "gender":"Female",
+            "gender": "Female",
             "profileName": profilename,
             "user_id": 1,
             "profile_id": 9,
@@ -127,7 +128,8 @@ class TestPool:
                 }
             ],
             "reviewed_by": [],
-            "added_on": datetime.utcnow()
+            "added_on": datetime.utcnow(),
+            "gender": "Male"
         }
         response = test_client.post(
             '/api/v1/addPresence/', data=json.dumps(data), headers={'Content-Type': 'application/json'})
@@ -209,7 +211,6 @@ class TestPool:
         assert response.status_code == 200
         assert response.data != b'{"error": "No presence found"}\n'
 
-
     def test_for_get_count_validation(self, test_client):
         """
         GIVEN a Flask application configured for testing
@@ -221,3 +222,14 @@ class TestPool:
             '/api/v1/getCount/99/', headers={'Content-Type': 'application/json'})
         assert response.status_code == 200
         assert response.data == b'{"accepted_female_count":0,"accepted_male_count":0,"declined_female_count":0,"declined_male_count":0,"reviewer_id":99}\n'
+
+    def test_for_get_acceptance_rate(self, test_client):
+        """
+        GIVEN a Flask application configured for testing
+        WHEN the '/api/v1/getAcceptanceRate/' page is requested (POST)
+        THEN check that the response is valid
+        """
+
+        response = test_client.get(
+            '/api/v1/getAcceptanceRate/1/', headers={'Content-Type': 'application/json'})
+        assert response.status_code == 200

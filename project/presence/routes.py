@@ -168,27 +168,48 @@ def get_presence_count(reviewer_id):
         "reviewer_id": reviewer_id, "application_status": "Declined"}}}, {"gender": "Male"}]}
     declined_female_query = {"$and": [{"reviewed_by": {action: {
         "reviewer_id": reviewer_id, "application_status": "Declined"}}}, {"gender": "Female"}]}
+    declined_other_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Declined"}}}, {"gender": "Other"}]}
+    declined_undisclosed_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Declined"}}}, {"gender": "Prefer Not To Say"}]}
     accepted_male_query = {"$and": [{"reviewed_by": {action: {
         "reviewer_id": reviewer_id, "application_status": "Accepted"}}}, {"gender": "Male"}]}
     accepted_female_query = {"$and": [{"reviewed_by": {action: {
         "reviewer_id": reviewer_id, "application_status": "Accepted"}}}, {"gender": "Female"}]}
+    accepted_other_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Accepted"}}}, {"gender": "Other"}]}
+    accepted_undisclosed_query = {"$and": [{"reviewed_by": {action: {
+        "reviewer_id": reviewer_id, "application_status": "Accepted"}}}, {"gender": "Prefer Not To Say"}]}
+
 
     declined_male_count = mongo.db.presence.count_documents(
         declined_male_query)
     declined_female_count = mongo.db.presence.count_documents(
         declined_female_query)
+    declined_other_count = mongo.db.presence.count_documents(
+        declined_other_query)
+    declined_undisclosed_count = mongo.db.presence.count_documents(
+        declined_undisclosed_query)
     accepted_male_count = mongo.db.presence.count_documents(
         accepted_male_query)
     accepted_female_count = mongo.db.presence.count_documents(
         accepted_female_query)
+    accepted_other_count = mongo.db.presence.count_documents(
+        accepted_other_query)
+    accepted_undisclosed_count = mongo.db.presence.count_documents(
+        accepted_undisclosed_query)
 
     try:
         result = {
             "reviewer_id": reviewer_id,
             "declined_male_count": declined_male_count,
             "declined_female_count": declined_female_count,
+            "declined_other_count": declined_other_query,
+            "declined_undisclosed_count": declined_undisclosed_count,
             "accepted_male_count": accepted_male_count,
-            "accepted_female_count": accepted_female_count
+            "accepted_female_count": accepted_female_count,
+            "accepted_other_count": accepted_other_count,
+            "accepted_undisclosed_count" : accepted_undisclosed_count
         }
     except Exception as error:
         print("Exception", error)

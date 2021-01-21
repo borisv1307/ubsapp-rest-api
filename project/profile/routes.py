@@ -63,7 +63,8 @@ def create_user_profile():
             "aboutMe":  profile_data['aboutMe'],
             "education": profile_data['education'],
             "experience": profile_data['experience'],
-            "gender": profile_data['gender']
+            "gender": profile_data['gender'],
+            "email": profile_data['email']
         })
 
         if create_profile:
@@ -78,7 +79,8 @@ def create_user_profile():
                 "aboutMe":  profile_data['aboutMe'],
                 "education": profile_data['education'],
                 "experience": profile_data['experience'],
-                "gender": profile_data['gender']
+                "gender": profile_data['gender'],
+                "email": profile_data['email']
             }
         else:
             output = {'code': 2, "error": "Insert Failed"}
@@ -120,7 +122,7 @@ def get_user_profiles(user_id):
                             "state": user[0]['contact_details']['state'],
                             "zip": user[0]['contact_details']['zip'],
                             "city": user[0]['contact_details']['city'],
-                            "email": user[0]['email'],
+                            "email": getprofile['email'],
                             "profileImg": getprofile['profileImg'],
                             "first_name": getprofile['first_name'],
                             "last_name": getprofile['last_name'],
@@ -138,7 +140,7 @@ def get_user_profiles(user_id):
                             "state": get_contact[0]['state'],
                             "zip": get_contact[0]['zip'],
                             "city": get_contact[0]['city'],
-                            "email": user[0]['email'],
+                            "email": getprofile['email'],
                             "profileImg": getprofile['profileImg'],
                             "first_name": getprofile['first_name'],
                             "last_name": getprofile['last_name'],

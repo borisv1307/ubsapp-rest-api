@@ -204,7 +204,7 @@ def get_presence_count(reviewer_id):
             "reviewer_id": reviewer_id,
             "declined_male_count": declined_male_count,
             "declined_female_count": declined_female_count,
-            "declined_other_count": declined_other_query,
+            "declined_other_count": declined_other_count,
             "declined_undisclosed_count": declined_undisclosed_count,
             "accepted_male_count": accepted_male_count,
             "accepted_female_count": accepted_female_count,

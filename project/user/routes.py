@@ -86,6 +86,7 @@ def create_user():
         hashed_password = bcrypt.hashpw(request.get_json()['password'].encode('utf-8'), bcrypt.gensalt())
         registration_type = request.get_json()['registration_type']
         gender = request.get_json()['gender']
+        ethnicity = request.get_json()['ethnicity']
         date_of_birth = request.get_json()['date_of_birth']
     except:
         return {'code': 4, 'error': MISSING_MSG}, 403
@@ -134,6 +135,7 @@ def create_user():
                 'date_joined' : date_joined,
                 'registration_type' : registration_type,
                 'gender': gender,
+                'ethnicity': ethnicity,
                 'date_of_birth': date_of_birth,
                 'email_validation':'False',
                 'contact_details' : request.get_json()['contact_details'],

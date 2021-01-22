@@ -55,6 +55,7 @@ class TestSomething:
         "password": "Hello",
         "registration_type": "jobSeeker",
         "gender": "Male",
+        "ethnicity": "Asian",
         "date_of_birth": random_date,
         'email_validation':'False',
         "contact_details": {
@@ -85,6 +86,7 @@ class TestSomething:
         "last_name":"testLName",
         "registrationType": "jobSeeker",
         "gender": "Male",
+        "ethnicity": "Asian",
         "date_of_birth": "1992-10-01",
         'email_validation':'False',
         "contact_details": {
@@ -115,6 +117,7 @@ class TestSomething:
         "password": "Hello",
         "registration_type": "",
         "gender": "Male",
+        "ethnicity": "Asian",
         "date_of_birth": "1992-10-01",
         'email_validation':'False',
         "contact_details": {
@@ -144,6 +147,7 @@ class TestSomething:
         "password": "Hello",
         "registration_type": "jobSeeker",
         "gender": "Male",
+        "ethnicity": "Asian",
         "date_of_birth": "1992-10-01",
         'email_validation':'False',
         "contact_details": {

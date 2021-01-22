@@ -4,8 +4,6 @@ test create profile and view profile.
 
 """
 # pylint: disable = line-too-long, too-many-lines, no-name-in-module, import-error, multiple-imports, pointless-string-statement, wrong-import-order
-from project import create_app
-from bson.objectid import ObjectId
 
 import pytest
 import os
@@ -17,6 +15,8 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 PARENT_ROOT = os.path.abspath(os.path.join(SITE_ROOT, os.pardir))
 GRANDPAPA_ROOT = os.path.abspath(os.path.join(PARENT_ROOT, os.pardir))
 sys.path.insert(0, GRANDPAPA_ROOT)
+from project import create_app
+from bson.objectid import ObjectId
 
 profilename = "Profile B"
 
@@ -81,7 +81,8 @@ class TestPool:
                 }
             ],
             "added_on": datetime.utcnow(),
-            "gender": "Male"
+            "gender": "Male",
+            "ethnicity": "White"
         }
         response = test_client.post(
             '/api/v1/addPresence/', data=json.dumps(data), headers={'Content-Type': 'application/json'})
@@ -129,7 +130,8 @@ class TestPool:
             ],
             "reviewed_by": [],
             "added_on": datetime.utcnow(),
-            "gender": "Male"
+            "gender": "Male",
+            "ethnicity": "White"
         }
         response = test_client.post(
             '/api/v1/addPresence/', data=json.dumps(data), headers={'Content-Type': 'application/json'})
@@ -157,9 +159,9 @@ class TestPool:
             "profile_id": "9",
             "user_id": "1",
             "feedback": {
-                "reviewer_id": "4",
+                "reviewer_id": 4,
                 "reviewed_on": "1122",
-                "application_status": "Declined"
+                "application_status": "Accepted"
             }
         }
         response = test_client.patch('/api/v1/savePresenceReview/', data=json.dumps(
@@ -221,7 +223,7 @@ class TestPool:
         response = test_client.get(
             '/api/v1/getCount/99/', headers={'Content-Type': 'application/json'})
         assert response.status_code == 200
-        # assert response.data == b'{"accepted_female_count":0,"accepted_male_count":0,"declined_female_count":0,"declined_male_count":0,"reviewer_id":99}\n'
+        # assert response.data == b'{"accepted_female_count":0,"accepted_male_count":0,"accepted_other_count":0,"accepted_undisclosed_count":0,"declined_female_count":0,"declined_male_count":0,"declined_other_count":0,"declined_undisclosed_count":0,"reviewer_id":99}\n'
 
     def test_for_get_acceptance_rate(self, test_client):
         """
@@ -232,4 +234,15 @@ class TestPool:
 
         response = test_client.get(
             '/api/v1/getAcceptanceRate/1/', headers={'Content-Type': 'application/json'})
+        assert response.status_code == 200
+
+    def test_for_get_count_by_ethnicity(self, test_client):
+        """
+        GIVEN a Flask application configured for testing
+        WHEN the '/api/v1/getAllPresence/' page is requested (POST)
+        THEN check that the response is valid
+        """
+
+        response = test_client.get(
+            '/api/v1/getCountByEthnicity/99/', headers={'Content-Type': 'application/json'})
         assert response.status_code == 200

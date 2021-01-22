@@ -64,7 +64,8 @@ def create_user_profile():
             "education": profile_data['education'],
             "experience": profile_data['experience'],
             "gender": profile_data['gender'],
-            "email": profile_data['email']
+            "email": profile_data['email'],
+            "ethnicity": profile_data['ethnicity']
         })
 
         if create_profile:
@@ -80,7 +81,8 @@ def create_user_profile():
                 "education": profile_data['education'],
                 "experience": profile_data['experience'],
                 "gender": profile_data['gender'],
-                "email": profile_data['email']
+                "email": profile_data['email'],
+                "ethnicity": profile_data['ethnicity']
             }
         else:
             output = {'code': 2, "error": "Insert Failed"}
@@ -130,7 +132,8 @@ def get_user_profiles(user_id):
                             "aboutMe":  getprofile['aboutMe'],
                             "education": getprofile['education'],
                             "experience": getprofile['experience'],
-                            "gender": getprofile['gender']
+                            "gender": getprofile['gender'],
+                            "ethnicity": getprofile['ethnicity']
                         })
                     else:
                         output.append({
@@ -148,7 +151,8 @@ def get_user_profiles(user_id):
                             "aboutMe":  getprofile['aboutMe'],
                             "education": getprofile['education'],
                             "experience": getprofile['experience'],
-                            "gender": getprofile['gender']
+                            "gender": getprofile['gender'],
+                            "ethnicity": getprofile['ethnicity']
                         })
             else:
                 output = {"error": "Profiles not found"}
@@ -188,7 +192,8 @@ def edit_profile():
             "education": profile_data["education"],
             "experience": profile_data["experience"],
             "gender": profile_data["gender"],
-            "email": profile_data["email"]
+            "email": profile_data["email"],
+            "ethnicity": profile_data["ethnicity"]
 
 
         })
@@ -206,7 +211,9 @@ def edit_profile():
                 "education": profile_data["education"],
                 "experience": profile_data["experience"],
                 "gender": profile_data["gender"],
-                "email": profile_data["email"]
+                "email": profile_data["email"],
+                "ethnicity": profile_data["ethnicity"]
+
             }
         else:
             output = {"code": 2, "error": "Document update failed"}

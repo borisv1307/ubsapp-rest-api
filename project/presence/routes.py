@@ -1,7 +1,7 @@
 # pylint: disable = line-too-long, inconsistent-return-statements, unused-variable, broad-except, trailing-whitespace, cyclic-import,bare-except, missing-module-docstring, missing-function-docstring, too-many-lines, no-name-in-module, import-error, multiple-imports, pointless-string-statement, too-many-locals, wrong-import-order, anomalous-backslash-in-string
 from datetime import datetime
 from flask import request
-from project import mongo
+from project import mongo, token_required
 from pymongo.collection import ReturnDocument
 from . import presence_blueprint
 
@@ -13,6 +13,7 @@ from . import presence_blueprint
 
 
 @presence_blueprint.route('/api/v1/addPresence/', methods=['POST'])
+@token_required
 def add_presence_to_pool():
     date_joined = datetime.utcnow()
     profile_data = request.get_json()
@@ -80,6 +81,7 @@ def insert_data(profile_information):
 
 
 @presence_blueprint.route('/api/v1/getAllPresence/<reviewer_id>/', methods=['GET'])
+@token_required
 def get_all_presence_for_reviewer(reviewer_id):
     if request.method == 'GET':
         try:
@@ -118,6 +120,7 @@ def get_all_presence_for_reviewer(reviewer_id):
 
 
 @presence_blueprint.route('/api/v1/savePresenceReview/', methods=['PATCH'])
+@token_required
 def update_presence_with_review():
     date_joined = datetime.utcnow()
     reviewer = request.get_json()
@@ -160,6 +163,7 @@ def update_presence_with_review():
 
 
 @presence_blueprint.route('/api/v1/getCount/<reviewer_id>/', methods=['GET'])
+@token_required
 def get_presence_count(reviewer_id):
     try:
         reviewer_id = int(reviewer_id)
@@ -222,6 +226,7 @@ def get_presence_count(reviewer_id):
 
 
 @presence_blueprint.route('/api/v1/getAcceptanceRate/<user_id>/', methods=['GET'])
+@token_required
 def get_acceptance_rate_for_jobseeker(user_id):
     try:
         user_id = int(user_id)
@@ -258,6 +263,7 @@ def get_acceptance_rate_for_jobseeker(user_id):
     return result
 
 @presence_blueprint.route('/api/v1/getCountByEthnicity/<reviewer_id>/', methods=['GET'])
+@token_required
 def get_presence_count_by_ethnicity(reviewer_id):
     try:
         reviewer_id = int(reviewer_id)

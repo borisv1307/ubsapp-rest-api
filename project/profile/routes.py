@@ -4,7 +4,7 @@ from json import loads
 from functools import wraps
 from bson.json_util import dumps
 from flask import request
-from project import mongo
+from project import mongo ,token_required
 from . import profile_blueprint
 
 ################
@@ -33,6 +33,7 @@ def profile_validation(func):
 
 
 @profile_blueprint.route('/api/v1/createProfile/', methods=['POST'])
+@token_required
 @profile_validation
 def create_user_profile():
    # Get fields from request body, check for missing fields
@@ -93,6 +94,7 @@ def create_user_profile():
 
 
 @profile_blueprint.route('/api/v1/getProfiles/<user_id>/', methods=['GET'])
+@token_required
 def get_user_profiles(user_id):
     # Get user_id
     int_user_id = int(user_id)
@@ -168,6 +170,7 @@ def get_user_profiles(user_id):
     return output
 
 @profile_blueprint.route('/api/v1/editProfile/', methods=['PUT'])
+@token_required
 @profile_validation
 def edit_profile():
     profile_data = request.get_json()

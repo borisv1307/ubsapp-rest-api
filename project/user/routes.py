@@ -4,11 +4,12 @@ import bcrypt
 import re
 from flask_jwt_extended import create_access_token
 from flask import request
-from project import mongo, decrypt
+from project import mongo, decrypt, token_required
 from pymongo import ReturnDocument
 import smtplib
 import pyotp
 from . import user_blueprint
+
 
 
 MISSING_MSG = 'Missing request body'
@@ -205,6 +206,7 @@ def user_login():
 
 
 @user_blueprint.route('/api/v1/verify_otp/', methods=['POST'])
+@token_required
 def verify_otp():
     # Initialize variables to be inserted and displayed
     try:
@@ -248,6 +250,7 @@ def verify_otp():
 
 
 @user_blueprint.route('/api/v1/resend_otp/', methods=['POST'])
+@token_required
 def resend_otp():
     try:
         email = request.get_json()['email']
@@ -354,6 +357,7 @@ def get_all_users():
                     'gender': user['gender'],
                     'ethnicity': user['ethnicity'],
                     'date_of_birth': user['date_of_birth'],
+                    'email_validation': user['email_validation'],
                     'contact_details': user['contact_details']
                 })
 
@@ -364,6 +368,7 @@ def get_all_users():
 
 # GET, EDIT, DELETE USER
 @user_blueprint.route('/api/v1/users/<user_id>/', methods=['GET', 'PATCH', 'DELETE'])
+@token_required
 def edit_one_user(user_id):
 
     # Convert id to integer
@@ -395,6 +400,7 @@ def edit_one_user(user_id):
                 'gender': user['gender'],
                 'ethnicity': user['ethnicity'],
                 'date_of_birth': user['date_of_birth'],
+                'email_validation': user['email_validation'],
                 'contact_details': user['contact_details'],
                 'count_of_profiles_deleted': countprofile
 
@@ -406,7 +412,7 @@ def edit_one_user(user_id):
     # Patch Request
     elif request.method == 'PATCH':
         fields = ['first_name', 'last_name', 'registration_type',
-                  'gender', 'date_of_birth', 'contact_details']
+                  'gender', 'date_of_birth', 'contact_details','ethnicity']
         pairs = {}
         request_body = request.get_json()
 
@@ -431,8 +437,11 @@ def edit_one_user(user_id):
             'gender': user['gender'],
             'ethnicity': user['ethnicity'],
             'date_of_birth': user['date_of_birth'],
+            'email_validation': user['email_validation'],
             'contact_details': user['contact_details']
         }
     except:
         output = {'code': 5, "error": "User does not exist"}, 403
     return output
+
+

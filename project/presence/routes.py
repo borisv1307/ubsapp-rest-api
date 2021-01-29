@@ -98,7 +98,6 @@ def get_all_presence_for_reviewer(reviewer_id):
                     'profile_name': presence['profileName'],
                     'profileImg': presence['profileImg'],
                     'gender': presence['gender'],
-                    'ethnicity': presence['ethnicity'],
                     'state': presence['state'],
                     'zip': presence['zip'],
                     'city': presence['city'],

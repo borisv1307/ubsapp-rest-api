@@ -141,7 +141,6 @@ def update_presence_with_review():
                 "email": profile_details['email'],
                 "position": profile_details['position'],
                 "gender": profile_details['gender'],
-                "ethnicity": profile_details['ethnicity'],
                 "aboutMe":  profile_details['aboutMe'],
                 "education": profile_details['education'],
                 "experience": profile_details['experience'],

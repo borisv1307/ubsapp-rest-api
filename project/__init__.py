@@ -6,6 +6,7 @@ from flask_jwt_extended import JWTManager
 from functools import wraps
 
 SET_KEY = 'abcdefghijklmnopqrstuvwxyz'
+BATCH_COUNT = 10
 mongo = PyMongo()
 
 def create_app(env_name):

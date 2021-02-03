@@ -427,14 +427,14 @@ def get_batch_presence_count(reviewer_id, batch_no):
     try:
         result = {
             "reviewer_id": reviewer_id,
-            "batch_declined_male_count": get_gender_rejected['declined_male_count'],
-            "batch_declined_female_count": get_gender_rejected['declined_female_count'],
-            "batch_declined_other_count": get_gender_rejected['declined_other_count'],
-            "batch_declined_undisclosed_count": get_gender_rejected['declined_undisclosed_count'],
-            "batch_accepted_male_count": get_gender_accepted['accepted_male_count'],
-            "batch_accepted_female_count": get_gender_accepted['accepted_female_count'],
-            "batch_accepted_other_count": get_gender_accepted['accepted_other_count'],
-            "batch_accepted_undisclosed_count" : get_gender_accepted['accepted_undisclosed_count']
+            "declined_male_count": get_gender_rejected['declined_male_count'],
+            "declined_female_count": get_gender_rejected['declined_female_count'],
+            "declined_other_count": get_gender_rejected['declined_other_count'],
+            "declined_undisclosed_count": get_gender_rejected['declined_undisclosed_count'],
+            "accepted_male_count": get_gender_accepted['accepted_male_count'],
+            "accepted_female_count": get_gender_accepted['accepted_female_count'],
+            "accepted_other_count": get_gender_accepted['accepted_other_count'],
+            "accepted_undisclosed_count" : get_gender_accepted['accepted_undisclosed_count']
         }
     except Exception as error:
         print("Exception", error)
@@ -587,23 +587,23 @@ def get_batch_presence_by_ethnicity_count(reviewer_id, batch_no):
     try:
         result = {
             "reviewer_id": reviewer_id,
-            "batch_declined_american_indian_count": get_rejected['declined_american_indian_count'],
-            "batch_declined_asian_count": get_rejected['declined_asian_count'],
-            "batch_declined_black_american_count": get_rejected['declined_black_american_count'],
-            "batch_declined_hispanic_latino_count": get_rejected['declined_hispanic_latino_count'],
-            "batch_declined_pacific_islander_count": get_rejected['declined_pacific_islander_count'],
-            "batch_declined_white_count": get_rejected['declined_white_count'],
-            "batch_declined_other_count": get_rejected['declined_other_count'],
-            "batch_declined_undisclosed_count": get_rejected['declined_undisclosed_count'],
+            "declined_american_indian_count": get_rejected['declined_american_indian_count'],
+            "declined_asian_count": get_rejected['declined_asian_count'],
+            "declined_black_american_count": get_rejected['declined_black_american_count'],
+            "declined_hispanic_latino_count": get_rejected['declined_hispanic_latino_count'],
+            "declined_pacific_islander_count": get_rejected['declined_pacific_islander_count'],
+            "declined_white_count": get_rejected['declined_white_count'],
+            "declined_other_count": get_rejected['declined_other_count'],
+            "declined_undisclosed_count": get_rejected['declined_undisclosed_count'],
 
-            "batch_accepted_american_indian_count": get_accepted['accepted_american_indian_count'],
-            "batch_accepted_asian_count": get_accepted['accepted_asian_count'],
-            "batch_accepted_black_american_count": get_accepted['accepted_black_american_count'],
-            "batch_accepted_hispanic_latino_count": get_accepted['accepted_hispanic_latino_count'],
-            "batch_accepted_pacific_islander_count" : get_accepted['accepted_pacific_islander_count'],
-            "batch_accepted_white_count": get_accepted['accepted_white_count'],
-            "batch_accepted_other_count": get_accepted['accepted_other_count'],
-            "batch_accepted_undisclosed_count": get_accepted['accepted_undisclosed_count']
+            "accepted_american_indian_count": get_accepted['accepted_american_indian_count'],
+            "accepted_asian_count": get_accepted['accepted_asian_count'],
+            "accepted_black_american_count": get_accepted['accepted_black_american_count'],
+            "accepted_hispanic_latino_count": get_accepted['accepted_hispanic_latino_count'],
+            "accepted_pacific_islander_count" : get_accepted['accepted_pacific_islander_count'],
+            "accepted_white_count": get_accepted['accepted_white_count'],
+            "accepted_other_count": get_accepted['accepted_other_count'],
+            "accepted_undisclosed_count": get_accepted['accepted_undisclosed_count']
         }
     except Exception as error:
         print("Exception", error)

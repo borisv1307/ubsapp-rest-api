@@ -226,6 +226,7 @@ def update_presence_with_review():
                     "batch_no": 1,
                     "batch_size": int(get_batch_count()),
                     "can_accept_more": 1,
+                    "batch_start_date": datetime.utcnow(),
                     "reviewed_count":1,
                     "reviewed_by": [{
                         "profile_id": presence_profile_id,
@@ -727,7 +728,8 @@ def get_all_batch_details_for_a_reviewer(reviewer_id):
 
     # Get collections
     batch_col = mongo.db.batch_details
-    get_results = batch_col.find({"hr_user_id": reviewer_id}, {'hr_user_id': 1,'batch_no': 1,'batch_size': 1, '_id': 0})
+    # get_results = batch_col.find({"hr_user_id": reviewer_id}, {'hr_user_id': 1,'batch_no': 1,'batch_size': 1, '_id': 0})
+    get_results = batch_col.find({"$and": [{"hr_user_id": reviewer_id}, {"can_accept_more":0}]})
 
     output = []
     try:
@@ -735,7 +737,8 @@ def get_all_batch_details_for_a_reviewer(reviewer_id):
             output.append({
                     'hr_user_id': int(batch['hr_user_id']),
                     'batch_no': int(batch['batch_no']),
-                    'batch_size': int(batch['batch_size'])
+                    'batch_size': int(batch['batch_size']),
+                    'date': batch['batch_start_date']
                 })
         return {'count': len(output), 'results': output}
     except ValueError:

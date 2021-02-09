@@ -226,7 +226,6 @@ def update_presence_with_review():
                     "batch_no": 1,
                     "batch_size": int(get_batch_count()),
                     "can_accept_more": 1,
-                    "batch_start_date": datetime.utcnow(),
                     "reviewed_count":1,
                     "reviewed_by": [{
                         "profile_id": presence_profile_id,
@@ -261,7 +260,10 @@ def update_presence_with_review():
                     batch_details_col.find_one_and_update(query_2, update, options)
                 else:
                     update_status = {
-                                "$set": {"can_accept_more": 0}
+                                "$set": {
+                                "can_accept_more": 0,
+                                "batch_end_date": datetime.utcnow()
+                                }
                             }
 
                     batch_details_col.find_one_and_update(query_2, update_status, options)
@@ -738,7 +740,7 @@ def get_all_batch_details_for_a_reviewer(reviewer_id):
                     'hr_user_id': int(batch['hr_user_id']),
                     'batch_no': int(batch['batch_no']),
                     'batch_size': int(batch['batch_size']),
-                    'date': batch['batch_start_date']
+                    'date': batch['batch_end_date']
                 })
         return {'count': len(output), 'results': output}
     except ValueError:

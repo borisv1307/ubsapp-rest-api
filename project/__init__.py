@@ -77,7 +77,7 @@ def get_batch_count():
 
 # Function to call AWS Facial Recognition
 def get_aws_tags(image_url):
-    session = boto3.Session(profile_name='produser1')
+    session = boto3.Session(profile_name='default')
     rekognition = session.client('rekognition')
     response = requests.get(image_url)
     response_content = response.content

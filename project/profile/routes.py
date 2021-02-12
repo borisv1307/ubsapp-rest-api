@@ -4,7 +4,7 @@ from json import loads
 from functools import wraps
 from bson.json_util import dumps
 from flask import request
-from project import mongo ,token_required
+from project import mongo ,token_required, get_aws_tags
 from . import profile_blueprint
 
 ################
@@ -41,8 +41,11 @@ def create_user_profile():
     profile_data = request.get_json()
 
     get_user_id = int(profile_data['user_id'])
+
     # Get collections
     profile = mongo.db.profile
+    aws_tags = mongo.db.aws_tags
+
     user = mongo.db.user
     try:
         profile_id = int(profile.find().skip(
@@ -53,6 +56,8 @@ def create_user_profile():
     # check if email is already in database
     user_id_exists = user.count_documents({'user_id': get_user_id})
     if user_id_exists:
+        get_tags = get_aws_tags(profile_data['profileImg'])
+
         create_profile = profile.insert_one({
             "profile_id": profile_id,
             "user_id": get_user_id,
@@ -67,6 +72,20 @@ def create_user_profile():
             "gender": profile_data['gender'],
             "email": profile_data['email'],
             "ethnicity": profile_data['ethnicity']
+        })
+        create_aws_tags = aws_tags.insert_one({
+            "profile_id": profile_id,
+            "user_id": get_user_id,
+            'AgeRange':get_tags['AgeRange'],
+            'Smile':get_tags['Smile'],
+            'Eyeglasses':get_tags['Eyeglasses'],
+            'Sunglasses':get_tags['Sunglasses'],
+            'Gender':get_tags['Gender'],
+            'Beard':get_tags['Beard'],
+            'Mustache':get_tags['Mustache'],
+            'EyesOpen': get_tags['EyesOpen'],
+            'MouthOpen': get_tags['MouthOpen'],
+            'Emotions': get_tags['Emotions']
         })
 
         if create_profile:

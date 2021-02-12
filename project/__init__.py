@@ -4,9 +4,12 @@ from flask_pymongo import PyMongo
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from functools import wraps
+import boto3, requests
+
 
 SET_KEY = 'abcdefghijklmnopqrstuvwxyz'
 BATCH_COUNT = 10
+
 mongo = PyMongo()
 
 def create_app(env_name):
@@ -68,9 +71,33 @@ def decrypt(n, ciphertext):
 
     return result
 
-
+# Set default batch count for presence.
 def get_batch_count():
     return BATCH_COUNT
+
+# Function to call AWS Facial Recognition
+def get_aws_tags(image_url):
+    session = boto3.Session(profile_name='default')
+    rekognition = session.client('rekognition')
+    response = requests.get(image_url)
+    response_content = response.content
+    rekognition_response = rekognition.detect_faces(Image={'Bytes': response_content}, Attributes=['ALL'])
+    get_face_details = rekognition_response['FaceDetails'][0]
+    # Filtering tags required for UBS App
+    results = {
+            'AgeRange':get_face_details['AgeRange'],
+            'Smile':get_face_details['Smile'],
+            'Eyeglasses':get_face_details['Eyeglasses'],
+            'Sunglasses':get_face_details['Sunglasses'],
+            'Gender':get_face_details['Gender'],
+            'Beard':get_face_details['Beard'],
+            'Mustache':get_face_details['Mustache'],
+            'EyesOpen': get_face_details['EyesOpen'],
+            'MouthOpen': get_face_details['MouthOpen'],
+            'Emotions': get_face_details['Emotions']
+            }
+  
+    return results
 
 
 def register_blueprints(app):

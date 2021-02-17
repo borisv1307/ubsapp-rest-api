@@ -747,3 +747,74 @@ def get_all_batch_details_for_a_reviewer(reviewer_id):
         return {'code': 4, 'error': "Batch details for this reviewer not found"}, 403
 
     return output
+
+
+def get_tags_count_batch(data):
+
+    smile = 0
+    without_smile = 0
+    eyeglasses = 0
+    without_eyeglasses = 0
+    sun_glasses = 0
+    without_sun_glasses = 0
+    beard = 0
+    without_beard = 0
+
+    for record in data:
+        for review in record['reviewed_by']:
+            for profile in mongo.db.aws_tags.find({"$and": [{"profile_id": review['profile_id']}, {"user_id": review['user_id']}]}):
+                smile_var = profile['Smile']
+                eyeglasses_var = profile['Eyeglasses']
+                sunglasses_var = profile['Sunglasses']
+                beard_var = profile['Beard']
+                if smile_var['Value']:
+                    smile += 1
+                else:
+                    without_smile += 1
+                if eyeglasses_var['Value']:
+                    eyeglasses += 1
+                else:
+                    without_eyeglasses += 1
+                if sunglasses_var['Value']:
+                    sun_glasses += 1
+                else:
+                    without_sun_glasses += 1
+                if beard_var['Value']:
+                    beard += 1
+                else:
+                    without_beard += 1
+
+    output = {
+        'smile':smile,
+        'without_smile':without_smile,
+        'eyeglasses':eyeglasses,
+        'without_eyeglasses':without_eyeglasses,
+        'sun_glasses':sun_glasses,
+        'without_sun_glasses':without_sun_glasses,
+        'beard':beard,
+        'without_beard':without_beard
+    }
+    return output
+
+# API for UI dropdown which contains list of batches for each HR
+@presence_blueprint.route('/api/v1/batchesTagsCount/<reviewer_id>/<batch_no>/', methods=['GET'])
+# @token_required
+def get_all_tags_for_a_batch_for_a_reviewer(reviewer_id, batch_no):
+    try:
+        reviewer_id = int(reviewer_id)
+        batch_no = int(batch_no)
+    except TypeError:
+        return {'error': 'reviewer id must be numeric'}, 403
+
+
+    # Get collections
+    batch_details_query = {"$and": [{"batch_no": batch_no}, {"hr_user_id": reviewer_id}]}
+    batch_details = mongo.db.batch_details.find(batch_details_query)
+
+    try:
+        get_tags_count = get_tags_count_batch(batch_details)
+        output = {'results': get_tags_count}
+    except ValueError:
+        return {'code': 4, 'error': "Batch details for this reviewer not found"}, 403
+
+    return output

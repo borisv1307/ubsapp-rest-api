@@ -82,9 +82,16 @@ def get_aws_tags(image_url):
     response = requests.get(image_url)
     response_content = response.content
     rekognition_response = rekognition.detect_faces(Image={'Bytes': response_content}, Attributes=['ALL'])
-    get_face_details = rekognition_response['FaceDetails'][0]
-    # Filtering tags required for UBS App
-    results = {
+    try:
+        get_face_details = rekognition_response['FaceDetails'][0]
+        get_success = True
+    except IndexError:
+        get_success = False
+        
+        # Filtering tags required for UBS App
+    if get_success:
+        results = {
+            'Code':1,
             'AgeRange':get_face_details['AgeRange'],
             'Smile':get_face_details['Smile'],
             'Eyeglasses':get_face_details['Eyeglasses'],
@@ -96,7 +103,9 @@ def get_aws_tags(image_url):
             'MouthOpen': get_face_details['MouthOpen'],
             'Emotions': get_face_details['Emotions']
             }
-  
+    else:
+        results = {'Code':2, 'Error':'Invalid Image'}
+
     return results
 
 
@@ -105,7 +114,9 @@ def register_blueprints(app):
     from project.profile import profile_blueprint
     from project.user import user_blueprint
     from project.presence import presence_blueprint
+    from project.aws import aws_blueprint
     app.register_blueprint(home_blueprint)
     app.register_blueprint(profile_blueprint)
     app.register_blueprint(user_blueprint)
     app.register_blueprint(presence_blueprint)
+    app.register_blueprint(aws_blueprint)

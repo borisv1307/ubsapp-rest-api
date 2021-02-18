@@ -812,8 +812,7 @@ def get_all_tags_for_a_batch_for_a_reviewer(reviewer_id, batch_no):
     batch_details = mongo.db.batch_details.find(batch_details_query)
 
     try:
-        get_tags_count = get_tags_count_batch(batch_details)
-        output = {'results': get_tags_count}
+        output = get_tags_count_batch(batch_details)
     except ValueError:
         return {'code': 4, 'error': "Batch details for this reviewer not found"}, 403
 

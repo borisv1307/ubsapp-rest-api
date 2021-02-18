@@ -40,12 +40,18 @@ def get_aws_tags_for_image():
 
     # check if user_id is already in database
     user_id_exists = user.count_documents({'user_id': get_int_user_id})
+    # check if an entry exists in aws_tags collection for the same profile_id. If so don,t allow an insert.
+    profile_id_exists = aws_tags.count_documents({'profile_id':get_profile_id })
+    # Convert to int
+    get_int_profile_id = int(profile_id_exists)
     if user_id_exists:
         get_tags = get_aws_tags(get_image_url)
         if get_tags['Code'] == 2:
-            output = {'Code':2 , 'error':'Invalid Image, Please try another image'}
-        else:
-            create_aws_tags = aws_tags.insert_one({
+            return {'Code':2 , 'error':'Invalid Image, Please try another image'}
+        elif get_int_profile_id == 0:
+            output = {'Code': 1, 'success':get_tags}
+
+            aws_tags.insert_one({
             "profile_id": get_profile_id,
             "user_id": get_int_user_id,
             'AgeRange':get_tags['AgeRange'],
@@ -59,6 +65,12 @@ def get_aws_tags_for_image():
             'MouthOpen': get_tags['MouthOpen'],
             'Emotions': get_tags['Emotions']
         })
-            output = {'Code': 1, 'Success':get_tags}
+        else:
+            output = {'Code':3 , 'error':'entry for this profile_id already exists. profile_id:-'+str(get_profile_id)}
+
+    else:
+        output = {'Code':4 , 'error':'user_id does not exists'}
+
+    
 
     return output

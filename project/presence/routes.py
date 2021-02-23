@@ -1,5 +1,6 @@
 # pylint: disable = line-too-long, inconsistent-return-statements, unused-variable, broad-except, trailing-whitespace, cyclic-import,bare-except, missing-module-docstring, missing-function-docstring, too-many-lines, no-name-in-module, import-error, multiple-imports, pointless-string-statement, too-many-locals, wrong-import-order, anomalous-backslash-in-string
-from datetime import datetime
+import datetime
+from datetime import date
 from flask import request
 from project import mongo, token_required, get_batch_count
 from pymongo.collection import ReturnDocument
@@ -749,24 +750,41 @@ def get_all_batch_details_for_a_reviewer(reviewer_id):
     return output
 
 
+def calculate_age(dtob):
+    today = date.today()
+    return today.year - dtob.year - ((today.month, today.day) < (dtob.month, dtob.day))
+
+
 def get_tags_count_batch(data):
 
     smile = 0
     without_smile = 0
     eyeglasses = 0
     without_eyeglasses = 0
-    sun_glasses = 0
-    without_sun_glasses = 0
-    beard = 0
-    without_beard = 0
+    facial_hair = 0
+    without_facial_hair = 0
+    young = 0
+    middle = 0
+    old = 0
 
     for record in data:
         for review in record['reviewed_by']:
             for profile in mongo.db.aws_tags.find({"$and": [{"profile_id": review['profile_id']}, {"user_id": review['user_id']}]}):
                 smile_var = profile['Smile']
                 eyeglasses_var = profile['Eyeglasses']
-                sunglasses_var = profile['Sunglasses']
+                Mustache_var = profile['Mustache']
                 beard_var = profile['Beard']
+                print("User Id ",review['user_id'])
+                for user in mongo.db.user.find({"user_id": review['user_id']}):
+                    dob = user['date_of_birth']
+                    date_array = dob.split("-")
+                    age = calculate_age(date(int(date_array[0]), int(date_array[1]), int(date_array[2])))
+                    if 0 <= age <= 20:
+                        young += 1
+                    elif 21 <= age <= 35:
+                        middle +=1
+                    else:
+                        old +=1
                 if smile_var['Value']:
                     smile += 1
                 else:
@@ -775,24 +793,21 @@ def get_tags_count_batch(data):
                     eyeglasses += 1
                 else:
                     without_eyeglasses += 1
-                if sunglasses_var['Value']:
-                    sun_glasses += 1
+                if beard_var['Value'] or Mustache_var['Value']:
+                    facial_hair += 1
                 else:
-                    without_sun_glasses += 1
-                if beard_var['Value']:
-                    beard += 1
-                else:
-                    without_beard += 1
+                    without_facial_hair += 1
 
     output = {
         'smile':smile,
         'without_smile':without_smile,
         'eyeglasses':eyeglasses,
         'without_eyeglasses':without_eyeglasses,
-        'sun_glasses':sun_glasses,
-        'without_sun_glasses':without_sun_glasses,
-        'beard':beard,
-        'without_beard':without_beard
+        'facial_hair':facial_hair,
+        'without_facial_hair':without_facial_hair,
+        'young': young,
+        'middle': middle,
+        'old': old
     }
     return output
 

@@ -813,7 +813,7 @@ def get_tags_count_batch(data):
 
 # API for UI dropdown which contains list of batches for each HR
 @presence_blueprint.route('/api/v1/batchesTagsCount/<reviewer_id>/<batch_no>/', methods=['GET'])
-# @token_required
+@token_required
 def get_all_tags_for_a_batch_for_a_reviewer(reviewer_id, batch_no):
     try:
         reviewer_id = int(reviewer_id)

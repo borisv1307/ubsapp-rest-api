@@ -817,7 +817,7 @@ def get_all_tags_for_a_batch_for_a_reviewer(reviewer_id, batch_no):
 
 
 @presence_blueprint.route('/api/v1/getCountByAge/<reviewer_id>/<batch_no>/', methods=['GET'])
-# @token_required
+@token_required
 def get_presence_count_by_age(reviewer_id, batch_no):
     declined_young = 0
     declined_middle = 0

@@ -1,15 +1,15 @@
-# pylint: disable = line-too-long, cyclic-import,relative-beyond-top-level, too-many-locals, broad-except, trailing-newlines,inconsistent-return-statements, trailing-whitespace, bare-except, missing-module-docstring, missing-function-docstring, too-many-lines, no-name-in-module, import-error, multiple-imports, pointless-string-statement, wrong-import-order, anomalous-backslash-in-string
+# pylint: disable = line-too-long, cyclic-import,relative-beyond-top-level, too-many-branches, too-many-locals, broad-except, trailing-newlines,inconsistent-return-statements, trailing-whitespace, bare-except, missing-module-docstring, missing-function-docstring, too-many-lines, no-name-in-module, import-error, multiple-imports, pointless-string-statement, wrong-import-order, anomalous-backslash-in-string
 from datetime import datetime
 import bcrypt
 import re
 from flask_jwt_extended import create_access_token
 from flask import request
 from project import mongo, decrypt, token_required
+from collections import defaultdict
 from pymongo import ReturnDocument
 import smtplib
 import pyotp
 from . import user_blueprint
-
 
 
 MISSING_MSG = 'Missing request body'
@@ -444,4 +444,69 @@ def edit_one_user(user_id):
         output = {'code': 5, "error": "User does not exist"}, 403
     return output
 
+def get_email_domains(get_email_ids):
+    domain_count = defaultdict(lambda: 0)
+    out = map(lambda x:x.lower(), get_email_ids)
+    get_lower = list(out)
+    for line in get_lower:
+        domain = line.split('@')[-1]
+        domain_count[domain] += 1
+    
+    return domain_count
+
+@user_blueprint.route('/api/v1/getCount/emailDomain/<reviewer_id>/<batch_no>/', methods=['GET'])
+@token_required
+def get_batch_presence_by_email_domain_count(reviewer_id, batch_no):
+    
+    # Get mongo collections
+    users = mongo.db.user
+
+    try:
+        reviewer_id = int(reviewer_id)
+        batch_no = int(batch_no)
+    except TypeError:
+        return {'error': 'Please pass numeric values for reviewer_id and batch_no'}, 403
+
+    batch_data_query = {"$and": [{"batch_no": batch_no}, {"hr_user_id": reviewer_id}]}
+    get_data = mongo.db.batch_details.find(batch_data_query)
+
+    declined_emails = []
+    accepted_emails = []
+    declined_user_ids = []
+    accepted_user_ids = []
+    if batch_data_query:
+        try:
+            for record in get_data:
+                for review in record['reviewed_by']:
+                    if review['application_status'] == "Declined":
+                        declined_user_ids.append(review['user_id'])
+                    elif review['application_status'] == "Accepted":
+                        accepted_user_ids.append(review['user_id'])
+            # fetch email_ids for each user inside one particular batch based on accepts and rejects
+            get_accepted_email_ids = users.find({'user_id': {'$in': accepted_user_ids}}, {'email':1, '_id':0})
+            get_rejected_email_ids = users.find({'user_id': {'$in': declined_user_ids}}, {'email':1, '_id':0})
+
+            if get_accepted_email_ids:
+                for accepted_email in get_accepted_email_ids:
+                    accepted_emails.append(accepted_email['email'])
+                accepted_count = len(accepted_emails)
+                accepted_domains = get_email_domains(accepted_emails)
+            else:
+                accepted_domains = {}
+            if get_rejected_email_ids:
+                for rejected_email in get_rejected_email_ids:
+                    declined_emails.append(rejected_email['email'])
+                rejected_count = len(declined_emails)
+                rejected_domains = get_email_domains(declined_emails)
+            else:
+                rejected_domains = {}
+
+
+            return {'accepted_email_count': accepted_count, 'accepted': accepted_domains, 'rejected_email_count':rejected_count, 'rejected':rejected_domains}
+
+        except Exception as error:
+            print("Error:-",error)
+            return {'code': 4, 'error': "No emails found"}, 403
+    else:
+        return {'code': 4, 'error': "No batch found"}, 403
 

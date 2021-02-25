@@ -52,7 +52,7 @@ def add_presence_to_pool():
                 "first_name": profile_data['first_name'],
                 "last_name": profile_data['last_name'],
                 "added_on": date_joined,
-                "reviewed_by": output['reviewed_by'],
+                "reviewed_by": profile_data['reviewed_by'],
                 "gender": profile_data['gender'],
                 "ethnicity":profile_data['ethnicity']
             }

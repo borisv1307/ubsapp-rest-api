@@ -1,7 +1,7 @@
 # pylint: disable = line-too-long, inconsistent-return-statements, unused-variable, broad-except, trailing-whitespace, cyclic-import,bare-except, missing-module-docstring, missing-function-docstring, too-many-lines, no-name-in-module, import-error, multiple-imports, pointless-string-statement, too-many-locals, wrong-import-order, anomalous-backslash-in-string
-import datetime
 from flask import request
 from project import mongo, token_required, get_batch_count
+from datetime import datetime
 from datetime import date
 from pymongo.collection import ReturnDocument
 from . import presence_blueprint
@@ -768,7 +768,7 @@ def get_tags_count_batch(data):
             for profile in mongo.db.aws_tags.find({"$and": [{"profile_id": review['profile_id']}, {"user_id": review['user_id']}]}):
                 smile_var = profile['Smile']
                 eyeglasses_var = profile['Eyeglasses']
-                Mustache_var = profile['Mustache']
+                mustache_var = profile['Mustache']
                 beard_var = profile['Beard']
                 if smile_var['Value']:
                     smile += 1
@@ -778,7 +778,7 @@ def get_tags_count_batch(data):
                     eyeglasses += 1
                 else:
                     without_eyeglasses += 1
-                if beard_var['Value'] or Mustache_var['Value']:
+                if beard_var['Value'] or mustache_var['Value']:
                     facial_hair += 1
                 else:
                     without_facial_hair += 1

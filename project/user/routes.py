@@ -444,15 +444,16 @@ def edit_one_user(user_id):
         output = {'code': 5, "error": "User does not exist"}, 403
     return output
 
+# Pass list of email_ids and return email domains and their count
 def get_email_domains(get_email_ids):
     domain_count = defaultdict(lambda: 0)
-    out = map(lambda x:x.lower(), get_email_ids)
-    get_lower = list(out)
+    get_lower = list(map(lambda x:x.casefold(), get_email_ids))
     for line in get_lower:
         domain = line.split('@')[-1]
         domain_count[domain] += 1
     
     return domain_count
+
 
 @user_blueprint.route('/api/v1/getCount/emailDomain/<reviewer_id>/<batch_no>/', methods=['GET'])
 @token_required
@@ -474,39 +475,47 @@ def get_batch_presence_by_email_domain_count(reviewer_id, batch_no):
     accepted_emails = []
     declined_user_ids = []
     accepted_user_ids = []
-    if batch_data_query:
-        try:
-            for record in get_data:
-                for review in record['reviewed_by']:
-                    if review['application_status'] == "Declined":
-                        declined_user_ids.append(review['user_id'])
-                    elif review['application_status'] == "Accepted":
-                        accepted_user_ids.append(review['user_id'])
-            # fetch email_ids for each user inside one particular batch based on accepts and rejects
-            get_accepted_email_ids = users.find({'user_id': {'$in': accepted_user_ids}}, {'email':1, '_id':0})
-            get_rejected_email_ids = users.find({'user_id': {'$in': declined_user_ids}}, {'email':1, '_id':0})
 
-            if get_accepted_email_ids:
-                for accepted_email in get_accepted_email_ids:
-                    accepted_emails.append(accepted_email['email'])
-                accepted_count = len(accepted_emails)
-                accepted_domains = get_email_domains(accepted_emails)
-            else:
-                accepted_domains = {}
-            if get_rejected_email_ids:
-                for rejected_email in get_rejected_email_ids:
-                    declined_emails.append(rejected_email['email'])
+
+    try:
+        for record in get_data:
+            for review in record['reviewed_by']:
+                if review['application_status'] == "Declined":
+                    declined_user_ids.append(review['user_id'])
+                elif review['application_status'] == "Accepted":
+                    accepted_user_ids.append(review['user_id'])
+
+        if len(declined_user_ids)> 0 or len(accepted_user_ids)>0:
+
+            sorted_declined_users = sorted(declined_user_ids, reverse=False)
+            sorted_accepted_users = sorted(accepted_user_ids, reverse=False)
+            
+            if len(sorted_declined_users)>0:
+                for declined_user_id in sorted_declined_users:
+                    get_email = users.find_one({'user_id': declined_user_id}, {'email':1, '_id':0})
+                    declined_emails.append(get_email['email'])
+
                 rejected_count = len(declined_emails)
                 rejected_domains = get_email_domains(declined_emails)
             else:
                 rejected_domains = {}
+                rejected_count = 0
+            
+            if len(sorted_accepted_users)>0:
+                for accepted_user_id in sorted_accepted_users:
+                    get_ac_email = users.find_one({'user_id': accepted_user_id}, {'email':1, '_id':0})
+                    accepted_emails.append(get_ac_email['email'])
 
+                accepted_count = len(accepted_emails)
+                accepted_domains = get_email_domains(accepted_emails)
+            else:
+                accepted_count = 0
+                accepted_domains = {}
 
             return {'accepted_email_count': accepted_count, 'accepted': accepted_domains, 'rejected_email_count':rejected_count, 'rejected':rejected_domains}
-
-        except Exception as error:
-            print("Error:-",error)
-            return {'code': 4, 'error': "No emails found"}, 403
-    else:
         return {'code': 4, 'error': "No batch found"}, 403
+    except Exception as error:
+        print("Error:-",error)
+        return {'code': 4, 'error': "No emails found"}, 403
+
 

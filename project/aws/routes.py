@@ -25,8 +25,8 @@ def load(url):
 def predict(image_url):
     image = load(image_url)
     current_dir = os.getcwd()
-    hair_model = tf.keras.models.load_model(currentDir+"/project/aws/Hair_Model.h5")
-    background_model = tf.keras.models.load_model(currentDir+"/project/aws/Background_Location_Model.h5")
+    hair_model = tf.keras.models.load_model(current_dir+"/project/aws/Hair_Model.h5")
+    background_model = tf.keras.models.load_model(current_dir+"/project/aws/Background_Location_Model.h5")
     hair_prediction = hair_model.predict(image)[0]
     location_prediction = background_model.predict(image)[0]
     output = {}

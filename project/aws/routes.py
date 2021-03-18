@@ -7,13 +7,16 @@ import tensorflow as tf
 import numpy as np
 import os
 import requests
+import Algorithmia
 from flask import request
 from project import mongo, token_required, get_aws_tags
 from PIL import Image
 from skimage import transform
 from . import aws_blueprint
 
-
+apiKey = "sim44RTACPPs2FqnDNPdUflr/em1"
+client = Algorithmia.client(apiKey)
+algo = client.algo('ms4975/image_classifier/1.0.0')
 
 def load(url):
 	np_image = Image.open(requests.get(url, stream=True).raw)
@@ -62,7 +65,8 @@ def predict(image_url):
             }
     return output
 
-
+def new_predict(image_url):
+	return algo.pipe(image_url).result
 
 @aws_blueprint.route('/api/v1/uploadImage/',  methods=['POST'])
 @token_required
@@ -95,7 +99,7 @@ def get_aws_tags_for_image():
 		get_tags = get_aws_tags(get_image_url)
 		url = get_image_url.split(".")
 		if url[3] == "jpg":
-			get_prediction = predict(get_image_url)
+			get_prediction = new_predict(get_image_url)
 		else:
 			get_prediction['Long_Hair'] = { 'Value': False }
 			get_prediction['Short_Hair'] = { 'Value': False }

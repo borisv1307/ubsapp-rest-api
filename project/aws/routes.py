@@ -14,58 +14,14 @@ from PIL import Image
 from skimage import transform
 from . import aws_blueprint
 
-apiKey = "sim44RTACPPs2FqnDNPdUflr/em1"
-client = Algorithmia.client(apiKey)
+# This is your Algorithmia Account API Key
+API_KEY = "sim44RTACPPs2FqnDNPdUflr/em1"
+client = Algorithmia.client(API_KEY)
+
+# This will be the algorithm path specified in your published algorithm
 algo = client.algo('ms4975/image_classifier/1.0.0')
 
-def load(url):
-	np_image = Image.open(requests.get(url, stream=True).raw)
-	np_image = np.array(np_image).astype('float32')/255
-	np_image = transform.resize(np_image, (224, 224))
-	np_image = np.expand_dims(np_image, axis=0)
-	return np_image
-
 def predict(image_url):
-    image = load(image_url)
-    current_dir = os.getcwd()
-    hair_model = tf.keras.models.load_model(current_dir+"/project/aws/Hair_Model_V2.h5")
-    background_model = tf.keras.models.load_model(current_dir+"/project/aws/Background_Location_Model_V2.h5")
-    hair_prediction = hair_model.predict(image)[0]
-    location_prediction = background_model.predict(image)[0]
-    output = {}
-
-    if hair_prediction[0] > hair_prediction[1]:
-        output['Long_Hair'] = {
-            'Value': False
-        }
-        output['Short_Hair'] = {
-            'Value': True
-        }
-    else:
-        output['Short_Hair'] = {
-            'Value': False
-        }
-        output['Long_Hair'] = {
-            'Value': True
-        }
-
-    if location_prediction[0] > location_prediction[1]:
-        output['Indoor'] = {
-            'Value': True
-            }
-        output['Outdoor'] = {
-            'Value': False
-            }
-    else:
-        output['Outdoor'] = {
-            'Value': True
-            }
-        output['Indoor'] = {
-            'Value': False
-            }
-    return output
-
-def new_predict(image_url):
 	return algo.pipe(image_url).result
 
 @aws_blueprint.route('/api/v1/uploadImage/',  methods=['POST'])
@@ -99,7 +55,7 @@ def get_aws_tags_for_image():
 		get_tags = get_aws_tags(get_image_url)
 		url = get_image_url.split(".")
 		if url[3] == "jpg":
-			get_prediction = new_predict(get_image_url)
+			get_prediction = predict(get_image_url)
 		else:
 			get_prediction['Long_Hair'] = { 'Value': False }
 			get_prediction['Short_Hair'] = { 'Value': False }
